@@ -1,0 +1,6 @@
+### An organisation.
+class: Organisation
+table: organisations
+fields:
+  name: String
+  createdAt: DateTime
