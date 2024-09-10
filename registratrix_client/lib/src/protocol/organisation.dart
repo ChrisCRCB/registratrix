@@ -1,11 +1,12 @@
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
-// ignore_for_file: use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
 // ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -15,13 +16,13 @@ abstract class Organisation implements _i1.SerializableModel {
   Organisation._({
     this.id,
     required this.name,
-    required this.createdAt,
-  });
+    DateTime? createdAt,
+  }) : createdAt = createdAt ?? DateTime.now();
 
   factory Organisation({
     int? id,
     required String name,
-    required DateTime createdAt,
+    DateTime? createdAt,
   }) = _OrganisationImpl;
 
   factory Organisation.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,8 +39,10 @@ abstract class Organisation implements _i1.SerializableModel {
   /// the id will be null.
   int? id;
 
+  /// The name of this organisation.
   String name;
 
+  /// The time when this organisation was created.
   DateTime createdAt;
 
   Organisation copyWith({
@@ -68,7 +71,7 @@ class _OrganisationImpl extends Organisation {
   _OrganisationImpl({
     int? id,
     required String name,
-    required DateTime createdAt,
+    DateTime? createdAt,
   }) : super._(
           id: id,
           name: name,

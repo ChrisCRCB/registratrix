@@ -16,6 +16,7 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
 import 'error_message.dart' as _i4;
 import 'organisation.dart' as _i5;
 import 'organisation_member.dart' as _i6;
+import 'package:registratrix_server/src/generated/organisation.dart' as _i7;
 export 'error_message.dart';
 export 'organisation.dart';
 export 'organisation_member.dart';
@@ -186,6 +187,11 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i6.OrganisationMember?>()) {
       return (data != null ? _i6.OrganisationMember.fromJson(data) : null) as T;
+    }
+    if (t == List<_i7.Organisation>) {
+      return (data as List)
+          .map((e) => deserialize<_i7.Organisation>(e))
+          .toList() as dynamic;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
