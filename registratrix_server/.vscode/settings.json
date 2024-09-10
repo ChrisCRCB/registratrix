@@ -6,6 +6,7 @@
     "CRCB",
     "registratrix",
     "runmode",
-    "Serverpod"
+    "Serverpod",
+    "writeln"
   ]
 }

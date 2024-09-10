@@ -2,5 +2,7 @@
 class: Organisation
 table: organisations
 fields:
+  ### The name of this organisation.
   name: String
-  createdAt: DateTime
+  ### The time when this organisation was created.
+  createdAt: DateTime, default=now

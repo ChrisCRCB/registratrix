@@ -1,0 +1,14 @@
+### A member of an organisation.
+class: OrganisationMember
+table: organisation_members
+fields:
+  ### The organisation this member is part of.
+  organisation: Organisation?, relation
+  ### The user data which has the membership.
+  userInfo: module:auth:UserInfo?, relation
+  ### Whether this member can edit the organisation.
+  canEditOrganisation: bool, default=false
+  ### Whether this member can add organisation events.
+  canAddEvents: bool, default=false
+  ### Whether this member can delete events.
+  canDeleteEvents: bool, default=false

@@ -1,0 +1,5 @@
+### An error message from the server.
+exception: ErrorMessage
+fields:
+  ### The message to send.
+  message: String, default="An error occurred."
