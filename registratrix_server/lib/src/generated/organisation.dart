@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'protocol.dart' as _i2;
 
 /// An organisation.
 abstract class Organisation extends _i1.TableRow
@@ -18,6 +19,8 @@ abstract class Organisation extends _i1.TableRow
     int? id,
     required this.name,
     DateTime? createdAt,
+    required this.ownerId,
+    this.owner,
   })  : createdAt = createdAt ?? DateTime.now(),
         super(id);
 
@@ -25,6 +28,8 @@ abstract class Organisation extends _i1.TableRow
     int? id,
     required String name,
     DateTime? createdAt,
+    required int ownerId,
+    _i2.SuperUser? owner,
   }) = _OrganisationImpl;
 
   factory Organisation.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -33,6 +38,11 @@ abstract class Organisation extends _i1.TableRow
       name: jsonSerialization['name'] as String,
       createdAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      ownerId: jsonSerialization['ownerId'] as int,
+      owner: jsonSerialization['owner'] == null
+          ? null
+          : _i2.SuperUser.fromJson(
+              (jsonSerialization['owner'] as Map<String, dynamic>)),
     );
   }
 
@@ -46,6 +56,11 @@ abstract class Organisation extends _i1.TableRow
   /// The time when this organisation was created.
   DateTime createdAt;
 
+  int ownerId;
+
+  /// The user who created this organisation.
+  _i2.SuperUser? owner;
+
   @override
   _i1.Table get table => t;
 
@@ -53,6 +68,8 @@ abstract class Organisation extends _i1.TableRow
     int? id,
     String? name,
     DateTime? createdAt,
+    int? ownerId,
+    _i2.SuperUser? owner,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -60,6 +77,8 @@ abstract class Organisation extends _i1.TableRow
       if (id != null) 'id': id,
       'name': name,
       'createdAt': createdAt.toJson(),
+      'ownerId': ownerId,
+      if (owner != null) 'owner': owner?.toJson(),
     };
   }
 
@@ -69,11 +88,13 @@ abstract class Organisation extends _i1.TableRow
       if (id != null) 'id': id,
       'name': name,
       'createdAt': createdAt.toJson(),
+      'ownerId': ownerId,
+      if (owner != null) 'owner': owner?.toJsonForProtocol(),
     };
   }
 
-  static OrganisationInclude include() {
-    return OrganisationInclude._();
+  static OrganisationInclude include({_i2.SuperUserInclude? owner}) {
+    return OrganisationInclude._(owner: owner);
   }
 
   static OrganisationIncludeList includeList({
@@ -109,10 +130,14 @@ class _OrganisationImpl extends Organisation {
     int? id,
     required String name,
     DateTime? createdAt,
+    required int ownerId,
+    _i2.SuperUser? owner,
   }) : super._(
           id: id,
           name: name,
           createdAt: createdAt,
+          ownerId: ownerId,
+          owner: owner,
         );
 
   @override
@@ -120,11 +145,15 @@ class _OrganisationImpl extends Organisation {
     Object? id = _Undefined,
     String? name,
     DateTime? createdAt,
+    int? ownerId,
+    Object? owner = _Undefined,
   }) {
     return Organisation(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       createdAt: createdAt ?? this.createdAt,
+      ownerId: ownerId ?? this.ownerId,
+      owner: owner is _i2.SuperUser? ? owner : this.owner?.copyWith(),
     );
   }
 }
@@ -140,6 +169,10 @@ class OrganisationTable extends _i1.Table {
       this,
       hasDefault: true,
     );
+    ownerId = _i1.ColumnInt(
+      'ownerId',
+      this,
+    );
   }
 
   /// The name of this organisation.
@@ -148,19 +181,50 @@ class OrganisationTable extends _i1.Table {
   /// The time when this organisation was created.
   late final _i1.ColumnDateTime createdAt;
 
+  late final _i1.ColumnInt ownerId;
+
+  /// The user who created this organisation.
+  _i2.SuperUserTable? _owner;
+
+  _i2.SuperUserTable get owner {
+    if (_owner != null) return _owner!;
+    _owner = _i1.createRelationTable(
+      relationFieldName: 'owner',
+      field: Organisation.t.ownerId,
+      foreignField: _i2.SuperUser.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.SuperUserTable(tableRelation: foreignTableRelation),
+    );
+    return _owner!;
+  }
+
   @override
   List<_i1.Column> get columns => [
         id,
         name,
         createdAt,
+        ownerId,
       ];
+
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'owner') {
+      return owner;
+    }
+    return null;
+  }
 }
 
 class OrganisationInclude extends _i1.IncludeObject {
-  OrganisationInclude._();
+  OrganisationInclude._({_i2.SuperUserInclude? owner}) {
+    _owner = owner;
+  }
+
+  _i2.SuperUserInclude? _owner;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _i1.Include?> get includes => {'owner': _owner};
 
   @override
   _i1.Table get table => Organisation.t;
@@ -189,6 +253,8 @@ class OrganisationIncludeList extends _i1.IncludeList {
 class OrganisationRepository {
   const OrganisationRepository._();
 
+  final attachRow = const OrganisationAttachRowRepository._();
+
   Future<List<Organisation>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganisationTable>? where,
@@ -198,6 +264,7 @@ class OrganisationRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<OrganisationTable>? orderByList,
     _i1.Transaction? transaction,
+    OrganisationInclude? include,
   }) async {
     return session.db.find<Organisation>(
       where: where?.call(Organisation.t),
@@ -207,6 +274,7 @@ class OrganisationRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -218,6 +286,7 @@ class OrganisationRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<OrganisationTable>? orderByList,
     _i1.Transaction? transaction,
+    OrganisationInclude? include,
   }) async {
     return session.db.findFirstRow<Organisation>(
       where: where?.call(Organisation.t),
@@ -226,6 +295,7 @@ class OrganisationRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -233,10 +303,12 @@ class OrganisationRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    OrganisationInclude? include,
   }) async {
     return session.db.findById<Organisation>(
       id,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -330,6 +402,31 @@ class OrganisationRepository {
     return session.db.count<Organisation>(
       where: where?.call(Organisation.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+}
+
+class OrganisationAttachRowRepository {
+  const OrganisationAttachRowRepository._();
+
+  Future<void> owner(
+    _i1.Session session,
+    Organisation organisation,
+    _i2.SuperUser owner, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (organisation.id == null) {
+      throw ArgumentError.notNull('organisation.id');
+    }
+    if (owner.id == null) {
+      throw ArgumentError.notNull('owner.id');
+    }
+
+    var $organisation = organisation.copyWith(ownerId: owner.id);
+    await session.db.updateRow<Organisation>(
+      $organisation,
+      columns: [Organisation.t.ownerId],
       transaction: transaction,
     );
   }

@@ -6,3 +6,5 @@ fields:
   name: String
   ### The time when this organisation was created.
   createdAt: DateTime, default=now
+  ### The user who created this organisation.
+  owner: SuperUser?, relation

@@ -9,63 +9,35 @@
 // ignore_for_file: use_super_parameters
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:async' as _i2;
-import 'package:registratrix_client/src/protocol/organisation.dart' as _i3;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i4;
-import 'protocol.dart' as _i5;
-
-/// The organisation endpoint.
-/// {@category Endpoint}
-class EndpointOrganisation extends _i1.EndpointRef {
-  EndpointOrganisation(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'organisation';
-
-  /// Get the organisations which this user account is a member for.
-  _i2.Future<List<_i3.Organisation>> getOrganisations() =>
-      caller.callServerEndpoint<List<_i3.Organisation>>(
-        'organisation',
-        'getOrganisations',
-        {},
-      );
-
-  /// Edit the [organisation].
-  _i2.Future<_i3.Organisation> editOrganisation(
-          _i3.Organisation organisation) =>
-      caller.callServerEndpoint<_i3.Organisation>(
-        'organisation',
-        'editOrganisation',
-        {'organisation': organisation},
-      );
-}
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'protocol.dart' as _i3;
 
 class _Modules {
   _Modules(Client client) {
-    auth = _i4.Caller(client);
+    auth = _i1.Caller(client);
   }
 
-  late final _i4.Caller auth;
+  late final _i1.Caller auth;
 }
 
-class Client extends _i1.ServerpodClientShared {
+class Client extends _i2.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
-    _i1.AuthenticationKeyManager? authenticationKeyManager,
+    _i2.AuthenticationKeyManager? authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
-      _i1.MethodCallContext,
+      _i2.MethodCallContext,
       Object,
       StackTrace,
     )? onFailedCall,
-    Function(_i1.MethodCallContext)? onSucceededCall,
+    Function(_i2.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i5.Protocol(),
+          _i3.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
@@ -75,19 +47,15 @@ class Client extends _i1.ServerpodClientShared {
           disconnectStreamsOnLostInternetConnection:
               disconnectStreamsOnLostInternetConnection,
         ) {
-    organisation = EndpointOrganisation(this);
     modules = _Modules(this);
   }
-
-  late final EndpointOrganisation organisation;
 
   late final _Modules modules;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup =>
-      {'organisation': organisation};
+  Map<String, _i2.EndpointRef> get endpointRefLookup => {};
 
   @override
-  Map<String, _i1.ModuleEndpointCaller> get moduleLookup =>
+  Map<String, _i2.ModuleEndpointCaller> get moduleLookup =>
       {'auth': modules.auth};
 }

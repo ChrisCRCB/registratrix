@@ -14,11 +14,12 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'error_message.dart' as _i2;
 import 'organisation.dart' as _i3;
 import 'organisation_member.dart' as _i4;
-import 'package:registratrix_client/src/protocol/organisation.dart' as _i5;
+import 'super_user.dart' as _i5;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i6;
 export 'error_message.dart';
 export 'organisation.dart';
 export 'organisation_member.dart';
+export 'super_user.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -43,6 +44,9 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i4.OrganisationMember) {
       return _i4.OrganisationMember.fromJson(data) as T;
     }
+    if (t == _i5.SuperUser) {
+      return _i5.SuperUser.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i2.ErrorMessage?>()) {
       return (data != null ? _i2.ErrorMessage.fromJson(data) : null) as T;
     }
@@ -52,10 +56,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i4.OrganisationMember?>()) {
       return (data != null ? _i4.OrganisationMember.fromJson(data) : null) as T;
     }
-    if (t == List<_i5.Organisation>) {
-      return (data as List)
-          .map((e) => deserialize<_i5.Organisation>(e))
-          .toList() as dynamic;
+    if (t == _i1.getType<_i5.SuperUser?>()) {
+      return (data != null ? _i5.SuperUser.fromJson(data) : null) as T;
     }
     try {
       return _i6.Protocol().deserialize<T>(data, t);
@@ -76,6 +78,9 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i4.OrganisationMember) {
       return 'OrganisationMember';
     }
+    if (data is _i5.SuperUser) {
+      return 'SuperUser';
+    }
     className = _i6.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
@@ -93,6 +98,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (data['className'] == 'OrganisationMember') {
       return deserialize<_i4.OrganisationMember>(data['data']);
+    }
+    if (data['className'] == 'SuperUser') {
+      return deserialize<_i5.SuperUser>(data['data']);
     }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);

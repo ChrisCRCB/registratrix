@@ -16,10 +16,11 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
 import 'error_message.dart' as _i4;
 import 'organisation.dart' as _i5;
 import 'organisation_member.dart' as _i6;
-import 'package:registratrix_server/src/generated/organisation.dart' as _i7;
+import 'super_user.dart' as _i7;
 export 'error_message.dart';
 export 'organisation.dart';
 export 'organisation_member.dart';
+export 'super_user.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -141,11 +142,125 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'DateTime',
           columnDefault: 'CURRENT_TIMESTAMP',
         ),
+        _i2.ColumnDefinition(
+          name: 'ownerId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
       ],
-      foreignKeys: [],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'organisations_fk_0',
+          columns: ['ownerId'],
+          referenceTable: 'super_users',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        )
+      ],
       indexes: [
         _i2.IndexDefinition(
           indexName: 'organisations_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'super_users',
+      dartName: 'SuperUser',
+      schema: 'public',
+      module: 'registratrix',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'super_users_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userInfoId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'canCreateOrganisations',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'canEditOrganisations',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'canDeleteOrganisations',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'canListOrganisations',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'canAddMembers',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+        _i2.ColumnDefinition(
+          name: 'canRemoveMembers',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+          columnDefault: 'false',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'super_users_fk_0',
+          columns: ['userInfoId'],
+          referenceTable: 'serverpod_user_info',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        )
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'super_users_pkey',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
@@ -179,6 +294,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i6.OrganisationMember) {
       return _i6.OrganisationMember.fromJson(data) as T;
     }
+    if (t == _i7.SuperUser) {
+      return _i7.SuperUser.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i4.ErrorMessage?>()) {
       return (data != null ? _i4.ErrorMessage.fromJson(data) : null) as T;
     }
@@ -188,10 +306,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i6.OrganisationMember?>()) {
       return (data != null ? _i6.OrganisationMember.fromJson(data) : null) as T;
     }
-    if (t == List<_i7.Organisation>) {
-      return (data as List)
-          .map((e) => deserialize<_i7.Organisation>(e))
-          .toList() as dynamic;
+    if (t == _i1.getType<_i7.SuperUser?>()) {
+      return (data != null ? _i7.SuperUser.fromJson(data) : null) as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -215,6 +331,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i6.OrganisationMember) {
       return 'OrganisationMember';
     }
+    if (data is _i7.SuperUser) {
+      return 'SuperUser';
+    }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';
@@ -236,6 +355,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (data['className'] == 'OrganisationMember') {
       return deserialize<_i6.OrganisationMember>(data['data']);
+    }
+    if (data['className'] == 'SuperUser') {
+      return deserialize<_i7.SuperUser>(data['data']);
     }
     if (data['className'].startsWith('serverpod.')) {
       data['className'] = data['className'].substring(10);
@@ -267,6 +389,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i5.Organisation.t;
       case _i6.OrganisationMember:
         return _i6.OrganisationMember.t;
+      case _i7.SuperUser:
+        return _i7.SuperUser.t;
     }
     return null;
   }

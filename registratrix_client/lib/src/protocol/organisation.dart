@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'protocol.dart' as _i2;
 
 /// An organisation.
 abstract class Organisation implements _i1.SerializableModel {
@@ -17,12 +18,16 @@ abstract class Organisation implements _i1.SerializableModel {
     this.id,
     required this.name,
     DateTime? createdAt,
+    required this.ownerId,
+    this.owner,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory Organisation({
     int? id,
     required String name,
     DateTime? createdAt,
+    required int ownerId,
+    _i2.SuperUser? owner,
   }) = _OrganisationImpl;
 
   factory Organisation.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -31,6 +36,11 @@ abstract class Organisation implements _i1.SerializableModel {
       name: jsonSerialization['name'] as String,
       createdAt:
           _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      ownerId: jsonSerialization['ownerId'] as int,
+      owner: jsonSerialization['owner'] == null
+          ? null
+          : _i2.SuperUser.fromJson(
+              (jsonSerialization['owner'] as Map<String, dynamic>)),
     );
   }
 
@@ -45,10 +55,17 @@ abstract class Organisation implements _i1.SerializableModel {
   /// The time when this organisation was created.
   DateTime createdAt;
 
+  int ownerId;
+
+  /// The user who created this organisation.
+  _i2.SuperUser? owner;
+
   Organisation copyWith({
     int? id,
     String? name,
     DateTime? createdAt,
+    int? ownerId,
+    _i2.SuperUser? owner,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -56,6 +73,8 @@ abstract class Organisation implements _i1.SerializableModel {
       if (id != null) 'id': id,
       'name': name,
       'createdAt': createdAt.toJson(),
+      'ownerId': ownerId,
+      if (owner != null) 'owner': owner?.toJson(),
     };
   }
 
@@ -72,10 +91,14 @@ class _OrganisationImpl extends Organisation {
     int? id,
     required String name,
     DateTime? createdAt,
+    required int ownerId,
+    _i2.SuperUser? owner,
   }) : super._(
           id: id,
           name: name,
           createdAt: createdAt,
+          ownerId: ownerId,
+          owner: owner,
         );
 
   @override
@@ -83,11 +106,15 @@ class _OrganisationImpl extends Organisation {
     Object? id = _Undefined,
     String? name,
     DateTime? createdAt,
+    int? ownerId,
+    Object? owner = _Undefined,
   }) {
     return Organisation(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       createdAt: createdAt ?? this.createdAt,
+      ownerId: ownerId ?? this.ownerId,
+      owner: owner is _i2.SuperUser? ? owner : this.owner?.copyWith(),
     );
   }
 }

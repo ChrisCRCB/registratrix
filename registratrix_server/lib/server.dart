@@ -1,4 +1,3 @@
-import 'package:mailer/mailer.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 
@@ -15,26 +14,13 @@ Future<void> run(final List<String> args) async {
     auth.AuthConfig(
       sendValidationEmail:
           (final session, final email, final validationCode) async {
-        final smtpServer = getSmtpSever(session);
         final message = getEmail(
           session: session,
           to: email,
           subject: 'Validate Email',
           text: 'Your validation code is $validationCode.',
         );
-        try {
-          await send(message, smtpServer);
-          return true;
-          // ignore: avoid_catches_without_on_clauses
-        } catch (e, s) {
-          session.log(
-            'Failed to send verification email.',
-            exception: e,
-            level: LogLevel.fatal,
-            stackTrace: s,
-          );
-          return false;
-        }
+        return sendMail(session, message);
       },
       sendPasswordResetEmail:
           (final session, final userInfo, final validationCode) async {
@@ -42,26 +28,13 @@ Future<void> run(final List<String> args) async {
         if (email == null) {
           return false;
         }
-        final smtpServer = getSmtpSever(session);
         final message = getEmail(
           session: session,
           to: email,
           subject: 'Password Reset',
           text: 'Your password reset code is $validationCode.',
         );
-        try {
-          await send(message, smtpServer);
-          return true;
-          // ignore: avoid_catches_without_on_clauses
-        } catch (e, s) {
-          session.log(
-            'Failed to send verification email.',
-            exception: e,
-            level: LogLevel.fatal,
-            stackTrace: s,
-          );
-          return false;
-        }
+        return sendMail(session, message);
       },
     ),
   );

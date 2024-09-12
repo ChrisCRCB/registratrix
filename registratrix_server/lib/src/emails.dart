@@ -28,3 +28,25 @@ Message getEmail({
       ..subject = subject
       ..text = text
       ..html = text;
+
+/// Send an email.
+Future<bool> sendMail(
+  final Session session,
+  final Message message, {
+  final String errorMessage = 'Failed to send email.',
+  final LogLevel logLevel = LogLevel.error,
+}) async {
+  try {
+    await send(message, getSmtpSever(session));
+    return true;
+    // ignore: avoid_catches_without_on_clauses
+  } catch (e, s) {
+    session.log(
+      errorMessage,
+      exception: e,
+      stackTrace: s,
+      level: logLevel,
+    );
+    return false;
+  }
+}

@@ -1,0 +1,20 @@
+### A user which can edit organisations.
+class: SuperUser
+table: super_users
+fields:
+  ### The user info this super user is bound to.
+  userInfo: module:auth:UserInfo?, relation
+  ### The name of this super user.
+  name: String
+  ### Whether this super user can create organisations.
+  canCreateOrganisations: bool, default=false
+  ### Whether this super user can edit organisations.
+  canEditOrganisations: bool, default=false
+  ### Whether this super user can delete organisations.
+  canDeleteOrganisations: bool, default=false
+  ### Whether this super user can list organisations they don't own.
+  canListOrganisations: bool, default=false
+  ### Whether this super user can add members to organisations.
+  canAddMembers: bool, default=false
+  ### Whether this super user can remove members from organisations.
+  canRemoveMembers: bool, default=false
