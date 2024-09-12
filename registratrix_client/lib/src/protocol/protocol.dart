@@ -15,7 +15,8 @@ import 'error_message.dart' as _i2;
 import 'organisation.dart' as _i3;
 import 'organisation_member.dart' as _i4;
 import 'super_user.dart' as _i5;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i6;
+import 'package:registratrix_client/src/protocol/organisation.dart' as _i6;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i7;
 export 'error_message.dart';
 export 'organisation.dart';
 export 'organisation_member.dart';
@@ -59,8 +60,13 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i5.SuperUser?>()) {
       return (data != null ? _i5.SuperUser.fromJson(data) : null) as T;
     }
+    if (t == List<_i6.Organisation>) {
+      return (data as List)
+          .map((e) => deserialize<_i6.Organisation>(e))
+          .toList() as dynamic;
+    }
     try {
-      return _i6.Protocol().deserialize<T>(data, t);
+      return _i7.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -81,7 +87,7 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i5.SuperUser) {
       return 'SuperUser';
     }
-    className = _i6.Protocol().getClassNameForObject(data);
+    className = _i7.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
@@ -104,7 +110,7 @@ class Protocol extends _i1.SerializationManager {
     }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i6.Protocol().deserializeByClassName(data);
+      return _i7.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

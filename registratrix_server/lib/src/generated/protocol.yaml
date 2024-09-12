@@ -1,0 +1,8 @@
+organisation:
+  - getOrganisations:
+  - editOrganisation:
+  - getSuperUser:
+  - requireSuperUser:
+  - getAllOrganisations:
+  - createOrganisation:
+  - addMember:

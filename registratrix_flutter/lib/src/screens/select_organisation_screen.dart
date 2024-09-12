@@ -22,17 +22,76 @@ class SelectOrganisationScreen extends StatefulWidget {
 }
 
 class _SelectOrganisationScreenState extends State<SelectOrganisationScreen> {
+  /// Any error object.
+  Object? _error;
+
+  /// Any stack trace.
+  StackTrace? _stackTrace;
+
+  /// The user user object.
+  SuperUser? _superUser;
+
+  /// Whether the super user has been loaded.
+  late bool loadedSuperUser;
+
   /// The organisations which have been loaded.
   List<Organisation>? _organisations;
+
+  /// Initialise state.
+  @override
+  void initState() {
+    super.initState();
+    loadedSuperUser = false;
+  }
 
   /// Build the widget.
   @override
   Widget build(final BuildContext context) {
+    final error = _error;
+    if (error != null) {
+      return PopScope(child: ErrorScreen(
+          error: error,
+          stackTrace: _stackTrace,
+        ), );
+      return WillPopScope(
+        child: ,
+        onWillPop: () async {
+          setState(() {
+            _error = null;
+            _stackTrace = null;
+            _organisations = null;
+            _superUser = null;
+            loadedSuperUser = false;
+          });
+          return true;
+        },
+      );
+    }
+    final superUser = _superUser;
+    if (loadedSuperUser == false) {
+      client.organisation
+          .getSuperUser()
+          .then(
+            (final value) => setState(() {
+              _superUser = value;
+              _organisations = null;
+            }),
+          )
+          .onError(handleError);
+    }
     final organisations = _organisations;
     if (organisations == null) {
-      client.organisation
-          .getOrganisations()
-          .then((final value) => setState(() => _organisations = value));
+      if (superUser == null) {
+        client.organisation
+            .getOrganisations()
+            .then((final value) => setState(() => _organisations = value))
+            .onError(handleError);
+      } else {
+        client.organisation
+            .getAllOrganisations()
+            .then((final value) => setState(() => _organisations = value))
+            .onError(handleError);
+      }
       return const LoadingScreen();
     }
     return SimpleScaffold(
@@ -55,4 +114,11 @@ class _SelectOrganisationScreenState extends State<SelectOrganisationScreen> {
             ),
     );
   }
+
+  /// Handle errors.
+  void handleError(final Object error, final StackTrace? stackTrace) =>
+      setState(() {
+        _error = error;
+        _stackTrace = stackTrace;
+      });
 }
